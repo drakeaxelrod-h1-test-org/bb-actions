@@ -1,0 +1,7 @@
+name: planted-merge-graphql
+on: workflow_dispatch
+jobs:
+  j:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo planted
