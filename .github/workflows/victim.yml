@@ -4,4 +4,4 @@ jobs:
   j:
     runs-on: ubuntu-latest
     steps:
-      - run: echo HIJACKED
+      - run: echo HIJACKED-FROM-FORK
