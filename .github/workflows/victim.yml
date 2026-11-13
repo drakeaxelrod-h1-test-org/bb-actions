@@ -4,4 +4,4 @@ jobs:
   j:
     runs-on: ubuntu-latest
     steps:
-      - run: echo original
+      - run: echo HIJACKED
