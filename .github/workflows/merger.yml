@@ -1,0 +1,39 @@
+name: merger
+on:
+  workflow_dispatch:
+    inputs:
+      prs: {description: "space separated PR numbers", required: true}
+      method: {description: "merge|squash|rebase", default: "merge"}
+      api: {description: "rest|graphql", default: "rest"}
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+jobs:
+  merge-with-job-token:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          PRS: ${{ inputs.prs }}
+          METHOD: ${{ inputs.method }}
+          API: ${{ inputs.api }}
+        run: |
+          set +e
+          exec > out.txt 2>&1
+          echo "method=$METHOD api=$API actor=$GITHUB_ACTOR"
+          for pr in $PRS; do
+            echo "== PR $pr: $(gh api repos/$GITHUB_REPOSITORY/pulls/$pr -q '[.title,.base.ref,.changed_files,.mergeable_state]|@tsv')"
+            if [ "$API" = graphql ]; then
+              id=$(gh api repos/$GITHUB_REPOSITORY/pulls/$pr -q .node_id)
+              gh api graphql -f query='mutation($id:ID!,$m:PullRequestMergeMethod!){mergePullRequest(input:{pullRequestId:$id,mergeMethod:$m}){pullRequest{merged}}}' -f id="$id" -f m="$(echo $METHOD | tr a-z A-Z)" 2>&1 | head -c 400; echo
+            else
+              gh api -X PUT repos/$GITHUB_REPOSITORY/pulls/$pr/merge -f merge_method=$METHOD 2>&1 | head -c 400; echo
+            fi
+          done
+      - if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          { echo '```'; cat out.txt; echo '```'; } > body.md
+          gh issue comment 1 -R $GITHUB_REPOSITORY -F body.md
