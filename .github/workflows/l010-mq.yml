@@ -1,0 +1,10 @@
+name: l010-mq
+on:
+  merge_group:
+  pull_request:
+    branches: [l010-base]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "::notice title=L010-ran::event=${{ github.event_name }} actor=${{ github.actor }} triggering_actor=${{ github.triggering_actor }} ref=${{ github.ref }} marker=BASE"
