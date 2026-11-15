@@ -1,0 +1,9 @@
+name: protected
+on:
+  workflow_dispatch:
+  workflow_call:
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "::notice title=protected-ran::event=${{ github.event_name }} actor=${{ github.actor }}"
