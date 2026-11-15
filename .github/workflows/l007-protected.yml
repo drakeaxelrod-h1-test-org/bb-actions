@@ -1,23 +1,15 @@
 name: l007-protected
 on:
   workflow_dispatch:
-  repository_dispatch:
-  issue_comment:
-  issues:
-  watch:
-  status:
-  create:
-  release:
-  deployment:
-  push:
-    branches: ['l007-*']
-  workflow_run:
-    workflows: ['l007-open']
-    types: [completed]
   workflow_call:
-permissions: {}
+permissions:
+  id-token: write
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "L007 protected ran event=${{ github.event_name }} actor=${{ github.actor }} triggering_actor=${{ github.triggering_actor }}"
+      - name: protected step
+        run: |
+          echo "::notice title=L007-protected-ran::event=${{ github.event_name }} actor=${{ github.actor }} triggering_actor=${{ github.triggering_actor }} ref=${{ github.ref }} caller_workflow_ref=${{ github.workflow_ref }}"
+          TOK=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=l007-research" | python3 -c "import sys,json;print(json.load(sys.stdin).get('value',''))")
+          python3 -c "import sys,json,base64;p=sys.argv[1].split('.')[1];p+='='*(-len(p)%4);c=json.loads(base64.urlsafe_b64decode(p));print('::notice title=L007-oidc-claims::'+json.dumps({k:c.get(k) for k in ('sub','job_workflow_ref','workflow_ref','actor','event_name','ref','aud')}))" "$TOK" || echo "::notice title=L007-oidc-claims::no token"
