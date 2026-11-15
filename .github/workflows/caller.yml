@@ -1,0 +1,7 @@
+name: caller
+on:
+  push:
+    branches: ['bcall-*']
+jobs:
+  call:
+    uses: drakeaxelrod-h1-test-org/bb-actions/.github/workflows/protected.yml@main
