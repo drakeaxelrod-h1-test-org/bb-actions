@@ -1,0 +1,23 @@
+name: l007-protected
+on:
+  workflow_dispatch:
+  repository_dispatch:
+  issue_comment:
+  issues:
+  watch:
+  status:
+  create:
+  release:
+  deployment:
+  push:
+    branches: ['l007-*']
+  workflow_run:
+    workflows: ['l007-open']
+    types: [completed]
+  workflow_call:
+permissions: {}
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "L007 protected ran event=${{ github.event_name }} actor=${{ github.actor }} triggering_actor=${{ github.triggering_actor }}"
