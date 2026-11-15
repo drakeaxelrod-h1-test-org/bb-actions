@@ -7,4 +7,4 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "::notice title=L010-ran::event=${{ github.event_name }} actor=${{ github.actor }} triggering_actor=${{ github.triggering_actor }} ref=${{ github.ref }} marker=BASE"
+      - run: echo "::notice title=L010-ran::event=${{ github.event_name }} actor=${{ github.actor }} triggering_actor=${{ github.triggering_actor }} ref=${{ github.ref }} marker=B-CODE-1794741663"
